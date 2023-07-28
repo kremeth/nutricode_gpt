@@ -15,7 +15,7 @@ def home():
         return f'{flask.request.args.get("callback", "jsonpCallback")}("Waiting");'
 
     try:
-        openai.api_key = "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"
+        openai.api_key = "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"
         response = openai.Completion.create(model="text-davinci-003", prompt=prompt, max_tokens=1000)
         if 'choices' in response and len(response.choices) > 0:
             return f'{flask.request.args.get("callback", "jsonpCallback")}({{"response": "{response.choices[0].text}"}});'
