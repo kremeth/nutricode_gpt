@@ -1,8 +1,11 @@
 import flask
 import os
 import openai
+from flask_cors import CORS  # Import the flask-cors extension
+
 
 app = flask.Flask(__name__)
+CORS(app)
 
 @app.route('/')
 @app.route('/home', methods=['POST'])  # Only accept POST requests for this route
