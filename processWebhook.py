@@ -16,7 +16,7 @@ def home():
         return f'{callback}("Waiting");'
 
     try:
-        openai.api_key = "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"
+        openai.api_key = "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"
         response = openai.Completion.create(model="text-davinci-003", prompt=prompt, max_tokens=1000)
         if 'choices' in response and len(response.choices) > 0:
             response_text = response.choices[0].text.replace('"', '\\"')  # Escape double quotes in the response
