@@ -9,7 +9,9 @@ app = flask.Flask(__name__)
 def home():
     # Usage example
     os.environ["PYDEVD_WARN_EVALUATION_TIMEOUT"] = "10000"  # Timeout in milliseconds
-    prompt = flask.request.args.get('text', '')  # Get the 'text' query parameter from the URL
+    data = flask.request.get_json()  # Get the JSON data from the request body
+    prompt = data.get('text', '')  # Get the 'text' parameter from the JSON data
+
     callback = flask.request.args.get('callback', 'jsonpCallback')  # Get the 'callback' query parameter from the URL
 
     # Extract the API key from the query parameter 'api_key'
