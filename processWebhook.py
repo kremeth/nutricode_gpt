@@ -26,7 +26,7 @@ def home():
     api_key = flask.request.args.get('api_key', '')
 
     if not prompt:
-        return f'{callback}("Waiting");'
+        return f'{{"response": "Waiting"}}'
 
     try:
         openai.api_key = api_key
@@ -34,11 +34,11 @@ def home():
         if 'choices' in response and len(response.choices) > 0:
             response_text = response.choices[0].text.replace('"', '\\"')
             cleaned_response_text = response_text.replace('?', '').replace('\n', '')
-            return f'{callback}({{"response": "{cleaned_response_text}"}});'
+            return f'{{"response": "{cleaned_response_text}"}}'
         else:
-            return f'{callback}({{"response": ""}});'
+            return '{"response": ""}'
     except Exception as e:
-        return f'{callback}({{"response": "Error: {str(e)}"}});'
+        return f'{{"response": "Error: {str(e)}"}}'
 
 if __name__ == "__main__":
     app.secret_key = 'ItIsASecret'
