@@ -11,11 +11,11 @@ def home():
     os.environ["PYDEVD_WARN_EVALUATION_TIMEOUT"] = "10000"  # Timeout in milliseconds
     prompt = flask.request.args.get('text', '')  # Get the 'text' query parameter from the URL
     if not prompt:
-        return 'Waitingg'  # Return "Waiting" if the 'text' query parameter is not provided.
+        return f'{flask.request.args.get("callback", "jsonpCallback")}("Waiting");'
     
     openai.api_key = "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"
     response = openai.Completion.create(model="text-davinci-003", prompt=prompt, max_tokens=1000)
-    return response.choices[0].text
+    return f'{flask.request.args.get("callback", "jsonpCallback")}({{"response": "{response.choices[0].text}"}});'
 
 if __name__ == "__main__":
     app.secret_key = 'ItIsASecret'
