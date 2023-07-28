@@ -23,6 +23,7 @@ def home():
         response = openai.Completion.create(model="text-davinci-003", prompt=prompt, max_tokens=1000)
         if 'choices' in response and len(response.choices) > 0:
             response_text = response.choices[0].text.replace('"', '\\"')  # Escape double quotes in the response
+            response_text = response_text.replace('?\\n\\n', '')  # Remove '?\n\n' from the response
             return f'{callback}({{"response": "{response_text}"}});'
         else:
             return f'{callback}({{"response": ""}});'  # Return an empty response if there is no data
