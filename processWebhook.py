@@ -12,10 +12,16 @@ def home():
     prompt = flask.request.args.get('text', '')  # Get the 'text' query parameter from the URL
     if not prompt:
         return f'{flask.request.args.get("callback", "jsonpCallback")}("Waiting");'
-    
-    openai.api_key = "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"
-    response = openai.Completion.create(model="text-davinci-003", prompt=prompt, max_tokens=1000)
-    return f'{flask.request.args.get("callback", "jsonpCallback")}({{"response": "{response.choices[0].text}"}});'
+
+    try:
+        openai.api_key = "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"
+        response = openai.Completion.create(model="text-davinci-003", prompt=prompt, max_tokens=1000)
+        if 'choices' in response and len(response.choices) > 0:
+            return f'{flask.request.args.get("callback", "jsonpCallback")}({{"response": "{response.choices[0].text}"}});'
+        else:
+            return f'{flask.request.args.get("callback", "jsonpCallback")}("Error: Empty response from OpenAI");'
+    except Exception as e:
+        return f'{flask.request.args.get("callback", "jsonpCallback")}("Error: {str(e)}");'
 
 if __name__ == "__main__":
     app.secret_key = 'ItIsASecret'
