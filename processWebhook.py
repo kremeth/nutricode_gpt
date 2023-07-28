@@ -25,9 +25,9 @@ def home():
             response_text = response.choices[0].text.replace('"', '\\"')  # Escape double quotes in the response
             return f'{callback}({{"response": "{response_text}"}});'
         else:
-            return f'{callback}("Error: Empty response from OpenAI");'
+            return f'{callback}({{"response": ""}});'  # Return an empty response if there is no data
     except Exception as e:
-        return f'{callback}("Error: {str(e)}");'
+        return f'{callback}({{"response": "Error: {str(e)}"}});'
 
 if __name__ == "__main__":
     app.secret_key = 'ItIsASecret'
