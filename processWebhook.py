@@ -11,7 +11,7 @@ def home():
     os.environ["PYDEVD_WARN_EVALUATION_TIMEOUT"] = "10000"  # Timeout in milliseconds
     prompt = flask.request.args.get('text', '')  # Get the 'text' query parameter from the URL
     if not prompt:
-        return 0  # Return "Waiting" if the 'text' query parameter is not provided.
+        return 'Waiting'  # Return "Waiting" if the 'text' query parameter is not provided.
     
     openai.api_key = "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"
     response = openai.Completion.create(model="text-davinci-003", prompt=prompt, max_tokens=1000)
