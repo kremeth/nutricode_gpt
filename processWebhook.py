@@ -12,11 +12,14 @@ def home():
     prompt = flask.request.args.get('text', '')  # Get the 'text' query parameter from the URL
     callback = flask.request.args.get('callback', 'jsonpCallback')  # Get the 'callback' query parameter from the URL
 
+    # Extract the API key from the query parameter 'api_key'
+    api_key = flask.request.args.get('api_key', '')
+
     if not prompt:
         return f'{callback}("Waiting");'
 
     try:
-        openai.api_key = "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"
+        openai.api_key = api_key  # Use the extracted API key
         response = openai.Completion.create(model="text-davinci-003", prompt=prompt, max_tokens=1000)
         if 'choices' in response and len(response.choices) > 0:
             response_text = response.choices[0].text.replace('"', '\\"')  # Escape double quotes in the response
