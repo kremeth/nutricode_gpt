@@ -5,11 +5,11 @@ import openai
 app = flask.Flask(__name__)
 
 @app.route('/')
-@app.route('/home')
+@app.route('/home', methods=['POST'])  # Only accept POST requests for this route
 def home():
     # Usage example
     os.environ["PYDEVD_WARN_EVALUATION_TIMEOUT"] = "10000"  # Timeout in milliseconds
-    data = flask.request.get_json()  # Get the JSON data from the request body
+    data = flask.request.json  # Get the JSON data from the request body
     prompt = data.get('text', '')  # Get the 'text' parameter from the JSON data
 
     callback = flask.request.args.get('callback', 'jsonpCallback')  # Get the 'callback' query parameter from the URL
