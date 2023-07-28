@@ -1,4 +1,3 @@
-import pandas as pd
 import flask
 import os
 import openai
