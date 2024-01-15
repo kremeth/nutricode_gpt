@@ -1,16 +1,15 @@
-from flask import Flask, request, jsonify, make_response
+
+import flask
 import os
 import openai
 from flask_cors import CORS, cross_origin
 from openai import OpenAI
 
-app = Flask(__name__)
-
-# Configure CORS specifically for the desired origin
-CORS(app, resources={r"/home": {"origins": "https://admin.revenuehunt.com"}})
+app = flask.Flask(__name__)
+CORS(app)
 
 @app.route('/home', methods=['POST', 'OPTIONS'])
-@cross_origin(origin='https://admin.revenuehunt.com')  # Apply CORS to this route
+@cross_origin(origin='https://admin.revenuehunt.com', headers=['Content-Type', 'api_key'])
 def home():
     if request.method == 'OPTIONS':
         # Create a response for the preflight request with explicit headers
@@ -20,38 +19,48 @@ def home():
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, api_key"
         return response
 
-    if not request.is_json:
-        return jsonify({"response": "Invalid content type, must be application/json"}), 400
 
-    data = request.get_json()
+    # Usage example
+    os.environ["PYDEVD_WARN_EVALUATION_TIMEOUT"] = "10000"  # Timeout in milliseconds
+    data = flask.request.json
 
+    if not data:
+        return "Invalid JSON data", 400
+
+    # Check if the 'text' parameter is present in the JSON data
     if 'text' not in data:
-        return jsonify({"response": "Missing 'text' parameter in JSON data"}), 400
+        return "Missing 'text' parameter in JSON data", 400
 
-    prompt = data['text']
-    api_key = request.args.get('api_key', '')
+    prompt = data.get('text', '')
 
-    if not api_key:
-        return jsonify({"response": "Missing API key"}), 403
+    callback = flask.request.args.get('callback', 'jsonpCallback')
+    api_key = flask.request.args.get('api_key', '')
+
+    if not prompt:
+        return f'{{"response": "Waiting"}}'
 
     try:
         openai.api_key = api_key
         client = OpenAI(api_key=api_key)
 
         response = client.chat.completions.create(
-            messages=[{"role": "user", "content": prompt}],
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
             model="gpt-3.5-turbo",
-        )
-        
+        )        
         if 'choices' in response and len(response.choices) > 0:
-            response_text = response.choices[0].text.strip().replace('"', '\\"')
-            return jsonify({"response": response_text})
+            response_text = response.choices[0].text.replace('"', '\\"')
+            cleaned_response_text = response_text.replace('?', '').replace('\n', '')
+            return f'{{"response": "test"}}'
         else:
-            return jsonify({"response": "No response from OpenAI"})
-
+            return '{"response": ""}'
     except Exception as e:
-        return jsonify({"response": f"Error: {str(e)}"}), 500
+        return f'{{"response": "Error: {str(e)}"}}'
 
 if __name__ == "__main__":
-    app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'ItIsASecret')
+    app.secret_key = 'ItIsASecret'
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
