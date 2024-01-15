@@ -2,14 +2,15 @@
 import flask
 import os
 import openai
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from openai import OpenAI
 
 app = flask.Flask(__name__)
 CORS(app)
 
 @app.route('/')
-@app.route('/home', methods=['POST'])
+@app.route('/home', methods=['POST', 'OPTIONS'])
+@cross_origin(origin='*', headers=['Content-Type'])
 def home():
     # Usage example
     os.environ["PYDEVD_WARN_EVALUATION_TIMEOUT"] = "10000"  # Timeout in milliseconds
