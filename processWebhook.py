@@ -39,22 +39,32 @@ def home():
     if not prompt:
         return f'{{"response": "Waiting"}}'
 
-    try:
-        openai.api_key = api_key
+    # try:
+    #     openai.api_key = api_key
         
-        client = OpenAI(api_key=api_key)
+    #     client = OpenAI(api_key=api_key)
 
-        chat_completion = client.chat.completions.create(
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt,
-                }
-            ],
-            model="gpt-3.5-turbo",
-        )
+    #     chat_completion = client.chat.completions.create(
+    #         messages=[
+    #             {
+    #                 "role": "user",
+    #                 "content": prompt,
+    #             }
+    #         ],
+    #         model="gpt-3.5-turbo",
+    #     )
         
-        return f'{{"response": "{chat_completion.choices[0].message.content}"}}'
+    #     return f'{{"response": "{chat_completion.choices[0].message.content}"}}'
+
+    try:
+         openai.api_key = api_key
+         response = openai.Completion.create(model="text-davinci-003", prompt=prompt, max_tokens=1000)
+         if 'choices' in response and len(response.choices) > 0:
+             response_text = response.choices[0].text.replace('"', '\\"')
+             cleaned_response_text = response_text.replace('?', '').replace('\n', '')
+             return f'{{"response": "{cleaned_response_text}"}}'
+         else:
+             return '{"response": ""}'
 
     except Exception as e:
         return f'{{"response": "Error: {str(e)}"}}'
