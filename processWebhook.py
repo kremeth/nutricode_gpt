@@ -30,9 +30,8 @@ def home():
         return f'{{"response": "Waiting"}}'
 
     try:
-        openai.api_key = api_key
         
-        client = OpenAI(api_key=api_key,
+        client = OpenAI(api_key='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',
 )
 
         chat_completion = client.chat.completions.create(
