@@ -1,8 +1,7 @@
 
-
 import flask
 import os
-import openai
+from openai import OpenAI
 from flask_cors import CORS
 
 app = flask.Flask(__name__)
