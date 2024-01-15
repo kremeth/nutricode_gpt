@@ -53,8 +53,8 @@ def home():
             ],
             model="gpt-3.5-turbo",
         )
-
-        return chat_completion.choices[0].message.content
+        
+        return f'{{"response": "{chat_completion.choices[0].message.content}"}}'
 
     except Exception as e:
         return f'{{"response": "Error: {str(e)}"}}'
