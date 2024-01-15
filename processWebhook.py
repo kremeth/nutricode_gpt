@@ -30,7 +30,7 @@ def home():
 
     try:
         openai.api_key = api_key
-        response = openai.Completion.create(model="text-davinci-003", prompt=prompt, max_tokens=1000)
+        response = openai.Completion.create(model="gpt-4-1106-preview", prompt=prompt, max_tokens=1000)
         if 'choices' in response and len(response.choices) > 0:
             response_text = response.choices[0].text.replace('"', '\\"')
             cleaned_response_text = response_text.replace('?', '').replace('\n', '')
