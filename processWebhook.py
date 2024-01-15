@@ -3,6 +3,8 @@ import flask
 import os
 import openai
 from flask_cors import CORS
+from openai import OpenAI
+
 
 app = flask.Flask(__name__)
 CORS(app)
