@@ -1,9 +1,9 @@
-
 import flask
 import os
 import openai
 from flask_cors import CORS, cross_origin
 from openai import OpenAI
+from flask import request
 
 app = flask.Flask(__name__)
 CORS(app)
@@ -55,7 +55,7 @@ def home():
         if 'choices' in response and len(response.choices) > 0:
             response_text = response.choices[0].text.replace('"', '\\"')
             cleaned_response_text = response_text.replace('?', '').replace('\n', '')
-            return f'{{"response": "test"}}'
+            return f'{{"response": "{cleaned_response_text}"}}'
         else:
             return '{"response": ""}'
     except Exception as e:
