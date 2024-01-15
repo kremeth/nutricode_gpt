@@ -1,30 +1,36 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 import os
 import openai
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from openai import OpenAI
 
 app = Flask(__name__)
 
-# Setting up CORS for all domains. Modify accordingly if you want to restrict to certain domains.
-CORS(app)
+# Configure CORS specifically for the desired origin
+CORS(app, resources={r"/home": {"origins": "https://admin.revenuehunt.com"}})
 
-@app.route('/home', methods=['POST'])
+@app.route('/home', methods=['POST', 'OPTIONS'])
+@cross_origin(origin='https://admin.revenuehunt.com')  # Apply CORS to this route
 def home():
-    # Ensuring that the content type is application/json
+    if request.method == 'OPTIONS':
+        # Create a response for the preflight request with explicit headers
+        response = make_response()
+        response.headers["Access-Control-Allow-Origin"] = "https://admin.revenuehunt.com"
+        response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, api_key"
+        return response
+
     if not request.is_json:
         return jsonify({"response": "Invalid content type, must be application/json"}), 400
 
     data = request.get_json()
 
-    # Validating 'text' parameter in JSON data
     if 'text' not in data:
         return jsonify({"response": "Missing 'text' parameter in JSON data"}), 400
 
     prompt = data['text']
-
-    # API key handling
     api_key = request.args.get('api_key', '')
+
     if not api_key:
         return jsonify({"response": "Missing API key"}), 403
 
