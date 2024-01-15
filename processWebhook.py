@@ -1,4 +1,5 @@
 
+
 import flask
 import os
 import openai
@@ -31,7 +32,9 @@ def home():
 
     try:
         openai.api_key = api_key
-
+        
+        client = OpenAI(api_key=api_key,
+)
 
         chat_completion = client.chat.completions.create(
             messages=[
