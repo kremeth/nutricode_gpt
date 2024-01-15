@@ -1,11 +1,10 @@
-
 import flask
 import os
 from openai import OpenAI
 from flask_cors import CORS
 
 app = flask.Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route('/')
 @app.route('/home', methods=['POST'])
@@ -30,6 +29,7 @@ def home():
         return f'{{"response": "Waiting"}}'
 
     try:
+        openai.api_key = api_key
         
         client = OpenAI(api_key='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',
 )
