@@ -1,14 +1,23 @@
+# /path/to/your/flask_app.py
 import flask
 import os
 from openai import OpenAI
+import openai
 from flask_cors import CORS
 
 app = flask.Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-@app.route('/')
-@app.route('/home', methods=['POST'])
+@app.route('/home', methods=['POST', 'OPTIONS'])
 def home():
+    if flask.request.method == 'OPTIONS':
+        # Add necessary headers to allow CORS
+        response = flask.make_response()
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, api_key"
+        return response
+
     # Usage example
     os.environ["PYDEVD_WARN_EVALUATION_TIMEOUT"] = "10000"  # Timeout in milliseconds
     data = flask.request.json
@@ -23,7 +32,7 @@ def home():
     prompt = data.get('text', '')
 
     callback = flask.request.args.get('callback', 'jsonpCallback')
-    api_key = flask.request.args.get('api_key', '')
+    api_key = os.environ.get('OPENAI_API_KEY')  # Retrieve API key from environment variable
 
     if not prompt:
         return f'{{"response": "Waiting"}}'
@@ -31,8 +40,7 @@ def home():
     try:
         openai.api_key = api_key
         
-        client = OpenAI(api_key='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',
-)
+        client = OpenAI(api_key=api_key)
 
         chat_completion = client.chat.completions.create(
             messages=[
@@ -44,15 +52,11 @@ def home():
             model="gpt-3.5-turbo",
         )
 
-
-        chat_completion.choices[0].message.content
-
-
-
+        return chat_completion.choices[0].message.content
 
     except Exception as e:
         return f'{{"response": "Error: {str(e)}"}}'
 
 if __name__ == "__main__":
-    app.secret_key = 'ItIsASecret'
+    app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'DefaultSecretKey')
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
