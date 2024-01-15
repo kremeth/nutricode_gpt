@@ -1,18 +1,19 @@
 # /path/to/your/flask_app.py
-from flask import Flask, request, make_response
-from flask_cors import CORS
-import os
 import flask
 import openai
+from flask import Flask, request, make_response
+from flask_cors import CORS, cross_origin
+import os
 from openai import OpenAI
 
 app = Flask(__name__)
-CORS(app, resources={r"/home": {"origins": "https://admin.revenuehunt.com"}})
+cors = CORS(app)
 
 @app.route('/home', methods=['POST', 'OPTIONS'])
+@cross_origin(origin='https://admin.revenuehunt.com', headers=['Content-Type', 'api_key'])
 def home():
     if request.method == 'OPTIONS':
-        # Create a response for the preflight request
+        # Create a response for the preflight request with explicit headers
         response = make_response()
         response.headers["Access-Control-Allow-Origin"] = "https://admin.revenuehunt.com"
         response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
