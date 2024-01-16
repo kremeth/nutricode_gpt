@@ -53,7 +53,10 @@ def home():
             model="gpt-3.5-turbo",
         )        
         # return response.choices[0].message.content
-        return f'{{"response": "{response.choices[0].message.content}"}}'
+        response_text = response.choices[0].message.content
+        response_text = response.choices[0].text.replace('"', '\\"')
+        response_text = response_text.replace('?', '').replace('\n', '')
+        return f'{{"response": "{response_text}"}}'
 
     except Exception as e:
         return f'{{"response": "Error: {str(e)}"}}'
