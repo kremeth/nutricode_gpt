@@ -50,7 +50,7 @@ def home():
                     "content": prompt,
                 }
             ],
-            model="gpt-3.5-turbo-1106",
+            model="gpt-3.5-turbo",
         )        
         # return response.choices[0].message.content
         response_text = response.choices[0].message.content
