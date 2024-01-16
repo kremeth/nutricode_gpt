@@ -54,7 +54,7 @@ def home():
         )        
         # return response.choices[0].message.content
         response_text = response.choices[0].message.content
-        response_text = response.choices[0].text.replace('"', '\\"')
+        response_text = response_text.replace('"', '\\"')
         response_text = response_text.replace('?', '').replace('\n', '')
         return f'{{"response": "{response_text}"}}'
 
