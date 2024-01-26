@@ -80,7 +80,7 @@ def home():
     RANGE_NAME = 'Sheet1'  # Only sheet name is required for appending
 
     # The path to the service account key.
-    SERVICE_ACCOUNT_FILE = '/credentials.json'
+    SERVICE_ACCOUNT_FILE = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
     # Define the scopes (change to allow writing)
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
