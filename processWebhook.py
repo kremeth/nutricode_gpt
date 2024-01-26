@@ -138,7 +138,7 @@ def home():
         q_and_as = prompt.split('\n\n')
         
         # Split the q_and_as into a dictionary, where the key is the question and the value is the answer
-        split_qa = [re.split(r'\n# Selected Answer \d+:', val) for val in q_and_as[1:-1]]
+        split_qa = [re.split(r'\n Selected Answer \d+:', val) for val in q_and_as[1:-1]]
 
         # Tupled pairs of questions and answers
         pairs = [(val[0].split(':')[0], ''.join(val[1:])) for val in split_qa]
