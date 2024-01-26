@@ -3,7 +3,7 @@ import os
 import openai
 from flask_cors import CORS, cross_origin
 from openai import OpenAI
-from flask import request
+from flask import request, make_response
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 import re
@@ -11,7 +11,7 @@ from datetime import datetime
 import pytz
 
 app = flask.Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "https://admin.revenuehunt.com"}})
 
 @app.route('/home', methods=['POST', 'OPTIONS'])
 @cross_origin(origin='https://admin.revenuehunt.com', headers=['Content-Type', 'api_key'])
@@ -196,20 +196,12 @@ def home():
         response = request.execute()
 
         return f'{{"response": "{response_text}"}}'
-    
-
-
 
     except Exception as e:
-        return f'{{"response": "Error: {str(e)}"}}'
+        response = make_response(f'{{"response": "Error: {str(e)}"}}', 500)
+        response.headers["Access-Control-Allow-Origin"] = "https://admin.revenuehunt.com"
+        return response
 
 if __name__ == "__main__":
     app.secret_key = 'ItIsASecret'
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
-
-
-
-
-
-
-
