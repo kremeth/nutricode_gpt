@@ -16,13 +16,13 @@ CORS(app)
 @app.route('/home', methods=['POST', 'OPTIONS'])
 @cross_origin(origin='https://admin.revenuehunt.com', headers=['Content-Type', 'api_key'])
 def home():
-    if request.method == 'OPTIONS':
-        # Create a response for the preflight request with explicit headers
-        response = make_response()
-        response.headers["Access-Control-Allow-Origin"] = "https://admin.revenuehunt.com"
-        response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
-        response.headers["Access-Control-Allow-Headers"] = "Content-Type, api_key"
-        return response
+#    if request.method == 'OPTIONS':
+ #       # Create a response for the preflight request with explicit headers
+  #      response = make_response()
+   #     response.headers["Access-Control-Allow-Origin"] = "https://admin.revenuehunt.com"
+    #    response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+     #   response.headers["Access-Control-Allow-Headers"] = "Content-Type, api_key"
+      #  return response
 
 
 
