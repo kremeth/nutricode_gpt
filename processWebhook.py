@@ -129,20 +129,20 @@ def home():
             ],
             model="gpt-3.5-turbo",
         )     
-        print(prompt)
+        
         # return response.choices[0].message.content
         response_text = response.choices[0].message.content
         response_text = response_text.replace('"', '\\"')
         response_text = response_text.replace('?', '').replace('\n', '')
         # Split the prompt into segments containing the question and the answer
         q_and_as = prompt.split('\n\n# ')
-
+        
         # Split the q_and_as into a dictionary, where the key is the question and the value is the answer
         split_qa = [re.split(r'\n# Selected Answer \d+:', val) for val in q_and_as[1:-1]]
 
         # Tupled pairs of questions and answers
         pairs = [(val[0].split(':')[0], ''.join(val[1:])) for val in split_qa]
-
+        print(pairs[0])
         # Assign the values to each one of the keys in the dictionary
         for val in pairs:
             if val[0] == 'Question 63':
