@@ -153,10 +153,7 @@ def home():
         # Add which supplements it recommends 
         row['Supplements'] = q_and_as[-1].split('recommendation ')[-1].split(' .')[0]
 
-        response_text = 'test'
 
-        # Add the gpt response
-        row['GPT Response'] = response_text
 
 
         # Add the time
@@ -171,6 +168,9 @@ def home():
 
         # Get the date
         row['Date'] = singapore_time.strftime('%d/%m/%Y')
+
+        # Add the gpt response
+        row['GPT Response'] = response_text
 
 
 
