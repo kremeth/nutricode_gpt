@@ -2,7 +2,8 @@ import flask
 import os
 import openai
 from flask_cors import CORS, cross_origin
-from flask import request, make_response
+from openai import OpenAI
+from flask import request
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 import re
@@ -11,16 +12,6 @@ import pytz
 
 app = flask.Flask(__name__)
 CORS(app)
-
-# Spreadsheet configuration
-SPREADSHEET_ID = '1Fo37uAlkPAFJnLAnDxbHfb-HvzZYXjTtNOuKEyV5DCI'
-RANGE_NAME = 'Sheet1'
-SERVICE_ACCOUNT_FILE = '/Users/mathieukremeth/Desktop/credentials.json'
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-
-# Authenticate and construct service
-creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-service = build('sheets', 'v4', credentials=creds)
 
 @app.route('/home', methods=['POST', 'OPTIONS'])
 @cross_origin(origin='https://admin.revenuehunt.com', headers=['Content-Type', 'api_key'])
@@ -33,15 +24,20 @@ def home():
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, api_key"
         return response
 
+
+    # Usage example
+    os.environ["PYDEVD_WARN_EVALUATION_TIMEOUT"] = "10000"  # Timeout in milliseconds
     data = flask.request.json
 
     if not data:
         return "Invalid JSON data", 400
 
+    # Check if the 'text' parameter is present in the JSON data
     if 'text' not in data:
         return "Missing 'text' parameter in JSON data", 400
 
     prompt = data.get('text', '')
+
     callback = flask.request.args.get('callback', 'jsonpCallback')
     api_key = flask.request.args.get('api_key', '')
 
@@ -50,7 +46,9 @@ def home():
 
     try:
         openai.api_key = api_key
-        client = openai.ChatCompletion.create(
+        client = OpenAI(api_key=api_key)
+
+        response = client.chat.completions.create(
             messages=[
                 {
                     "role": "user",
@@ -58,11 +56,28 @@ def home():
                 }
             ],
             model="gpt-3.5-turbo",
-        )
-        response_text = client.choices[0].message.content
-        response_text = response_text.replace('"', '\\"').replace('?', '').replace('\n', '')
+        )        
+        # return response.choices[0].message.content
+        response_text = response.choices[0].message.content
+        response_text = response_text.replace('"', '\\"')
+        response_text = response_text.replace('?', '').replace('\n', '')
 
-        # Google Sheets code begins here
+        # The ID of the spreadsheet.
+        SPREADSHEET_ID = '1Fo37uAlkPAFJnLAnDxbHfb-HvzZYXjTtNOuKEyV5DCI'
+
+        # The range of the cells to access.
+        RANGE_NAME = 'Sheet1'  # Only sheet name is required for appending
+
+        # The path to the service account key.
+        SERVICE_ACCOUNT_FILE = '/credentials.json'
+
+        # Define the scopes (change to allow writing)
+        SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+
+        # Authenticate and construct service.
+        creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+        service = build('sheets', 'v4', credentials=creds)
+
         row = {
             'Email': '',
             'Time': '',
@@ -116,6 +131,7 @@ def home():
             'Question 58': '',
             'Question 60': '',
             'Question 61': ''
+
         }
 
         # Split the prompt into segments containing the question and the answer
@@ -134,34 +150,55 @@ def home():
             else:
                 row[val[0]] = val[1]
 
-        # Add which supplements it recommends
+
+        # Add which supplements it recommends 
         row['Supplements'] = q_and_as[-1].split('recommendation ')[-1].split(' .')[0]
 
-        # Get current time in Singapore
+        response_text = 'test'
+
+        # Add the gpt response
+        row['GPT Response'] = response_text
+
+
+        # Add the time
+        # Create a timezone object for Singapore
         singapore_timezone = pytz.timezone('Asia/Singapore')
+
+        # Get the current time in Singapore
         singapore_time = datetime.now(singapore_timezone)
+
+        # Get the time
         row['Time'] = singapore_time.strftime('%H:%M:%S')
+
+        # Get the date
         row['Date'] = singapore_time.strftime('%d/%m/%Y')
 
+
+
         values = [list(row.values())]  # API expects a list of lists
+
+        # How the input data should be interpreted.
         value_input_option = 'RAW'  # or 'USER_ENTERED'
+
+        # How the input data should be inserted.
         insert_data_option = 'INSERT_ROWS'  # or 'OVERWRITE'
 
         # Prepare the request
         request = service.spreadsheets().values().append(
-            spreadsheetId=SPREADSHEET_ID,
-            range=RANGE_NAME,
-            valueInputOption=value_input_option,
-            insertDataOption=insert_data_option,
+            spreadsheetId=SPREADSHEET_ID, 
+            range=RANGE_NAME, 
+            valueInputOption=value_input_option, 
+            insertDataOption=insert_data_option, 
             body={'values': values}
         )
 
         # Execute the request
         response = request.execute()
 
-        # Return a response or handle the response as needed
-        # return f'{{"response": "Updated cells: {response.get('updates').get('updatedCells')}"}}'
         return f'{{"response": "{response_text}"}}'
+    
+
+
 
     except Exception as e:
         return f'{{"response": "Error: {str(e)}"}}'
@@ -169,3 +206,10 @@ def home():
 if __name__ == "__main__":
     app.secret_key = 'ItIsASecret'
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
+
+
+
+
+
+
+
