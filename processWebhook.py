@@ -135,7 +135,7 @@ def home():
         response_text = response_text.replace('"', '\\"')
         response_text = response_text.replace('?', '').replace('\n', '')
         # Split the prompt into segments containing the question and the answer
-        q_and_as = prompt.split('\n\n# ')
+        q_and_as = prompt.split('\n\n')
         
         # Split the q_and_as into a dictionary, where the key is the question and the value is the answer
         split_qa = [re.split(r'\n# Selected Answer \d+:', val) for val in q_and_as[1:-1]]
