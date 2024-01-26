@@ -1,20 +1,20 @@
-from flask import Flask, request, make_response, jsonify
-from flask_cors import CORS
-import os
 import flask
+import os
 import openai
+from flask_cors import CORS, cross_origin
 from openai import OpenAI
+from flask import request
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 import re
 from datetime import datetime
 import pytz
 
-app = Flask(__name__)
-# Apply CORS to the entire application
-CORS(app, resources={r"/*": {"origins": "https://admin.revenuehunt.com"}})
+app = flask.Flask(__name__)
+CORS(app)
 
 @app.route('/home', methods=['POST', 'OPTIONS'])
+@cross_origin(origin='https://admin.revenuehunt.com', headers=['Content-Type', 'api_key'])
 def home():
     if request.method == 'OPTIONS':
         # Create a response for the preflight request with explicit headers
@@ -23,6 +23,7 @@ def home():
         response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, api_key"
         return response
+
 
 
     # Usage example
