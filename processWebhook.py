@@ -161,6 +161,7 @@ def home():
 
         # Return a response or handle the response as needed
         # return f'{{"response": "Updated cells: {response.get('updates').get('updatedCells')}"}}'
+        return f'{{"response": "{response_text}"}}'
 
     except Exception as e:
         return f'{{"response": "Error: {str(e)}"}}'
