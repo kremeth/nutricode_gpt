@@ -128,7 +128,8 @@ def home():
                 }
             ],
             model="gpt-3.5-turbo",
-        )        
+        )     
+        print(prompt)
         # return response.choices[0].message.content
         response_text = response.choices[0].message.content
         response_text = response_text.replace('"', '\\"')
